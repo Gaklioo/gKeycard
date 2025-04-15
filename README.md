@@ -17,4 +17,5 @@ Bug Finding & Security Checking
 
 Planned:
 Go through and normalize all the variable names throughout server & client, as the style is inconsistent as of now.
+Re-Write components that are constantly reitterated
 ```
