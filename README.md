@@ -9,10 +9,9 @@ Keycard Usage Log
 Admin Configuration in game
 Data storage for the entity [Requires the entity to be perma propped, and when saving call ENT:SaveData(), when loading call ENT:LoadData()]
 Keypad can be linked to doors in game by editing door linkage and pressing mouse 1 on a door
-
+DNA Scanning [Currently has no visual representation, might change later but its okay]
 
 In Progress:
-DNA Scanning
 Bug Finding & Security Checking
 
 Planned:
