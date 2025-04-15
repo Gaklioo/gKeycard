@@ -8,5 +8,8 @@ gAccessConfig.ModuleEditor = {
     },
     ["Team Override"] = {
         "Edit Teams"
+    },
+    ["DNA"] = {
+        "See Access"
     }
 }

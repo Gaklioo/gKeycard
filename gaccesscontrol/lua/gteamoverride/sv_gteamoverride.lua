@@ -1,8 +1,7 @@
 include("gaccesscontrol/lua/sh_gaccessconfig.lua")
 
 util.AddNetworkString("gBaseAccess_SetOverride")
-net.Receive("gBaseAccess_SetOverride", function()
-    local ply = net.ReadPlayer()
+net.Receive("gBaseAccess_SetOverride", function(len, ply)
     local entity = net.ReadEntity()
     local teamToAdd = net.ReadString()
     local boolValue = net.ReadBool()

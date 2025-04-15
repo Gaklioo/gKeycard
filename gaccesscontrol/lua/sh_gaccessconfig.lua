@@ -16,7 +16,6 @@ gAccess.Database = "gAccess_EntityStore"
     modules : Modules the keycard has
     teamOverride : Teams that have override access to the card
     dna : Teams that have DNA Access
-    retina : Jobs that have access to the card
     password : Password Addressed to the card
     map : Map the keycard is saved on
 */
@@ -29,7 +28,7 @@ gAccess.Database = "gAccess_EntityStore"
 if not sql.TableExists(gAccess.Database) then
     print("Creating Database")
     sql.Begin()
-        local str = string.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, class TEXT, x REAL, y REAL, z REAL, ax REAL, ay REAL, az REAL, accessLevel INTEGER, modules TEXT, teamOverride TEXT, dna TEXT, retina TEXT, password INT, map TEXT);", gAccess.Database)
+        local str = string.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, class TEXT, x REAL, y REAL, z REAL, ax REAL, ay REAL, az REAL, accessLevel INTEGER, modules TEXT, teamOverride TEXT, dna TEXT, doors TEXT, password INTEGER, map TEXT);", gAccess.Database)
         sql.Query(str)
     sql.Commit()
 end
@@ -48,6 +47,10 @@ gAccessConfig.Teams = {
     "Omega-1", 
     "O5", 
     "Alpha-1"
+}
+
+gAccessConfig.AllowedDoors = {
+    ["func_door"] = true
 }
 
 gAccessConfig.PasswordCheck = {

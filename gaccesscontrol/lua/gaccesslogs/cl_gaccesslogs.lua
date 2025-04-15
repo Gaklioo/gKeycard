@@ -47,7 +47,6 @@ function gAccessLogs.CreateLabel(parent, Text, Alignment, Color, Pos)
 end
 
 net.Receive("gAccessLogs_SendClient", function()
-    print("recievedc")
     local str = net.ReadString()
     table.insert(gAccessLogs.StoredInfo, str)
 
