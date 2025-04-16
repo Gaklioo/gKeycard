@@ -1,12 +1,12 @@
 include("gaccesscontrol/lua/sh_gaccessconfig.lua")
 
 util.AddNetworkString("gAccessLogs_SendClient")
-hook.Add("gAccess_LogUsage", "gAccess_LogUsageServer", function(player, accessLevel, result)
-    if not IsValid(player) then return end
+hook.Add("gAccess_LogUsage", "gAccess_LogUsageServer", function(ply, accessLevel, result)
+    if not IsValid(ply) then return end
     if accessLevel > 5 or accessLevel < 0 then return end
     if not gAccessLogs.AcceptedStrings[result] then return end
 
-    local playerName = player:GetName()
+    local playerName = ply:GetName()
     local str
 
     if reuslt == "Success" then
@@ -28,7 +28,7 @@ hook.Add("gAccess_LogUsage", "gAccess_LogUsageServer", function(player, accessLe
     net.Broadcast()
 end)
 
---Temp Stuff, remove
+--Temp Stuff, remove once uploaded
 gAccessTemp = gAccessTemp or {}
 
 gAccessTemp._P = FindMetaTable("Player")

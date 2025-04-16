@@ -33,8 +33,6 @@ if not sql.TableExists(gAccess.Database) then
     sql.Commit()
 end
 
---include("gaccesscontrol/lua/sh_gaccessconfig.lua")
-
 --Ranks that are allowed to edit the keypads
 gAccessConfig.AllowedRanks = {
     ["Owner"] = true,

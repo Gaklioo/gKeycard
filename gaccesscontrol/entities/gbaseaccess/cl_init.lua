@@ -1,5 +1,5 @@
 include("sh_shared.lua")
-
+print("[Debug] Loaded")
 
 gModulesRun = gModulesRun or {}
 gModulesRun.DoingPassword = false
@@ -16,7 +16,8 @@ gModulesRun.ClearenceEnum = {
 
 gModulesRun.ColorSuccess = Color(0, 255, 0)
 gModulesRun.ColorFailure = Color(255, 0, 0)
-gModulesRun.Material = Material("gaccesscontrol/scp.jpg")
+gModulesRun.SCPMaterial = Material("gaccesscontrol/scp.jpg")
+gModulesRun.FingerprintMaterial = Material("gaccesscontrol/fingerprint.jpg")
 
 function ENT:DrawButton(Text, x, y, w, h, pos, ang, scale, onClick)
     local hovered = false
@@ -84,10 +85,6 @@ function ENT:DrawPasswordInput(pos, ang, scale, w, h)
     cam.End3D2D()
 end
 
-function ENT:DrawDNAInput(pos, ang, scale, w, h)
-
-end
-
 net.Receive("gBaseAccess_DrawResponse", function()
     local ent = net.ReadEntity()
     local str = net.ReadString()
@@ -107,9 +104,18 @@ function ENT:DrawBase(pos, ang, scale, w, h)
         surface.DrawRect(0, 0, w, h)
 
         draw.DrawText("Keycard Scanner", "Default", w / 2, 0, Color(255, 255, 255, 255),TEXT_ALIGN_CENTER)
-        surface.SetMaterial(gModulesRun.Material)
-        surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(w / 3.5, h / 4, 64, 64)
+        if self.Modules["DNA"] then
+            surface.SetMaterial(gModulesRun.SCPMaterial)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(w / 10, h / 4, 64, 64)
+            surface.SetMaterial(gModulesRun.FingerprintMaterial)
+            surface.SetDrawColor(255, 255, 255, 255) 
+            surface.DrawTexturedRect(w / 2, h / 4, 64, 64)
+        else
+            surface.SetMaterial(gModulesRun.SCPMaterial)
+            surface.SetDrawColor(255, 255, 255, 255)
+            surface.DrawTexturedRect(w / 3.5, h / 4, 64, 64)
+        end
 
         draw.DrawText("Clearence Level " .. accessLevel, "Default", w / 2, h / 1.2, gModulesRun.ClearenceEnum[accessLevel], TEXT_ALIGN_CENTER)
 
@@ -160,6 +166,7 @@ function ENT:DrawFailure(pos, ang, scale, w, h)
 end
 
 function ENT:Draw()
+    print("[Debug] Drawing on client is good")
     self:DrawModel()
 
     local pos = self:GetPos() +
@@ -173,12 +180,14 @@ function ENT:Draw()
 
     if self:GetNW2String("Stage") == gAccess.Stages[1] then --Password [Password input on keycard, send password]
         self:DrawPasswordInput(pos, ang, scale, w, h)
-    elseif self:GetNW2String("Stage") == gAccess.Stages[2] then -- DNA [Draw something for dna IG?]
-        self:DrawDNAInput(pos, ang, scale, w, h)
     else
         self:DrawBase(pos, ang, scale, w, h)
     end
 end
+
+function ENT:Initialize()
+    print("[Debug] Loaded Entity")
+end 
 
 net.Receive("gBaseAccess_RunClientPasswordCheck", function()
     local ent = net.ReadEntity()

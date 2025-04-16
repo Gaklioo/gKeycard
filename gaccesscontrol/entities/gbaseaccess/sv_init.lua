@@ -1,6 +1,8 @@
-AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("sh_shared.lua")
+AddCSLuaFile("cl_init.lua")
 include("gaccesscontrol/lua/sh_gaccessconfig.lua")
+resource.AddFile("materials/gaccesscontrol/scp.jpg")
+resource.AddFile("materials/gaccesscontrol/fingerprint.jpg")
 include("sh_shared.lua")
 
 function ENT:Initialize()
@@ -211,6 +213,7 @@ end
 
 function ENT:ModuleCheck(act, callback)
     local modules = self.Modules
+
     local keys = {}
 
     for k in pairs(modules) do
@@ -237,6 +240,7 @@ function ENT:ModuleCheck(act, callback)
         end
 
         if module == "DNA" then
+            print("Doing DNA")
             if not self:DoDNA(act) then return fail() end
             return processNext()
         elseif module == "Keycard" or module == "Team Override" then
@@ -248,7 +252,6 @@ function ENT:ModuleCheck(act, callback)
             self:DoPassword(act, function(success)
                 if not success then 
                     self:SetNW2String("Stage", "") 
-                    print("Failure")
                     return fail() 
                 end
 
@@ -308,7 +311,6 @@ function ENT:Use(act, caller, use, value)
 
     local wep = act:GetActiveWeapon()
     if not IsValid(wep) or act:GetActiveWeapon():GetClass() != gAccessConfig.CardWeaponName then 
-        print("Failure Here 2")
         self:LogUsage(act, clearenceLevel, "Failure")
         self:SetResponse(act, "false")
         return 
@@ -316,14 +318,12 @@ function ENT:Use(act, caller, use, value)
 
     if self.TeamOverride[act:GetTeam()] then
         self:ModuleCheck(act, function(success)
-            print("Here 1")
             if success then
                 self:LogUsage(act, clearenceLevel, "Success")
                 self:OpenDoor()
                 self:SetResponse(act, "true")
                 return
             else
-                print("Failure Here 1")
                 self:LogUsage(act, clearenceLevel, "Failure")
                 self:SetResponse(act, "false")
                 return
@@ -337,14 +337,12 @@ function ENT:Use(act, caller, use, value)
                 self:SetResponse(act, "true")
                 return
             else
-                print("Failure Here 3")
                 self:LogUsage(act, clearenceLevel, "Failure")
                 self:SetResponse(act, "false")
                 return
             end
         end)
     else
-        print("Failure Here 4")
         self:LogUsage(act, clearenceLevel, "Failure")
         self:SetResponse(act, "false")
         return
