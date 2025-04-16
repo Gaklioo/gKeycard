@@ -38,13 +38,8 @@ function ENT:Initialize()
     }
 
     hook.Add("PlayerInitialSpawn", "gBaseAccess_SendInfotoPlayer", function(ply)
-        timer.Simple(10, function()
-            self:SendOverrides()
-            self:SendModules()
-            self:SendDNA()
-            self:SendDoors()
-            self:SetNW2Int("AccessLevel", self:GetNW2Int("AccessLevel"))
-            self:SetNW2Int("gAccess_Password", self:GetNW2Int("gAccess_Password"))
+        timer.Simple(3, function()
+            self:UpdatePlayer()
         end)
     end)
 end
@@ -197,6 +192,8 @@ function ENT:InitializeVariables(data)
     local dna = util.JSONToTable(data.dna or self.dnaAccess)
     local password = tonumber(data.password or 0)
     local doors = util.JSONToTable(data.doors or self.LinkedDoors)
+    local password = data.password
+    local accesslevel = data.accessLevel
 
     for _, id in pairs(doors) do
         local ent = ents.GetMapCreatedEntity(id)

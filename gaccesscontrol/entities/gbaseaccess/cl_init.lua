@@ -1,5 +1,4 @@
 include("sh_shared.lua")
-print("[Debug] Loaded")
 
 gModulesRun = gModulesRun or {}
 gModulesRun.DoingPassword = false
@@ -135,7 +134,7 @@ function ENT:DrawSuccess(pos, ang, scale, w, h)
         surface.DrawRect(0, 0, w, h)
 
         draw.DrawText("Keycard Scanner", "Default", w / 2, 0, Color(255, 255, 255, 255),TEXT_ALIGN_CENTER)
-        surface.SetMaterial(gModulesRun.Material)
+        surface.SetMaterial(gModulesRun.SCPMaterial)
         surface.SetDrawColor(255, 255, 255, 255)
         surface.DrawTexturedRect(w / 3.5, h / 4, 64, 64)
 
@@ -153,7 +152,7 @@ function ENT:DrawFailure(pos, ang, scale, w, h)
         surface.DrawRect(0, 0, w, h)
 
         draw.DrawText("Keycard Scanner", "Default", w / 2, 0, Color(255, 255, 255, 255),TEXT_ALIGN_CENTER)
-        surface.SetMaterial(gModulesRun.Material)
+        surface.SetMaterial(gModulesRun.SCPMaterial)
         surface.SetDrawColor(255, 255, 255, 255)
         surface.DrawTexturedRect(w / 3.5, h / 4, 64, 64)
 
@@ -166,7 +165,6 @@ function ENT:DrawFailure(pos, ang, scale, w, h)
 end
 
 function ENT:Draw()
-    print("[Debug] Drawing on client is good")
     self:DrawModel()
 
     local pos = self:GetPos() +
