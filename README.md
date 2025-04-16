@@ -12,10 +12,6 @@ Keypad can be linked to doors in game by editing door linkage and pressing mouse
 DNA Scanning [Currently has no visual representation, might change later but its okay]
 [Note: DNA Scanning has now been changed to a type of fingerprint recognition, but is still named DNA within the files. I change later :)]
 
-In Progress:
-Bug Finding & Security Checking
-
-Planned:
-Go through and normalize all the variable names throughout server & client, as the style is inconsistent as of now.
-Re-Write components that are constantly reitterated
+Progress:
+Complete, every feature is functional and works correctly. The style may be inconsistent but for now it is time for the next project and to refine what I learned from this.
 ```
