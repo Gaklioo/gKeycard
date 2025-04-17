@@ -18,7 +18,7 @@ gModulesRun.ColorFailure = Color(255, 0, 0)
 gModulesRun.SCPMaterial = Material("gaccesscontrol/scp.jpg")
 gModulesRun.FingerprintMaterial = Material("gaccesscontrol/fingerprint.jpg")
 
-function ENT:DrawButton(Text, x, y, w, h, pos, ang, scale, onClick)
+function gBaseENT:DrawButton(Text, x, y, w, h, pos, ang, scale, onClick)
     local hovered = false
     
     local tr = LocalPlayer():GetEyeTrace()
@@ -45,7 +45,7 @@ function ENT:DrawButton(Text, x, y, w, h, pos, ang, scale, onClick)
     end
 end
 
-function ENT:DrawPasswordInput(pos, ang, scale, w, h)
+function gBaseENT:DrawPasswordInput(pos, ang, scale, w, h)
     local btnSize = 25
     local spacing = 5
     local startX = (w - (btnSize * 3 + spacing * 2)) / 2
@@ -95,7 +95,7 @@ net.Receive("gBaseAccess_DrawResponse", function()
     end
 end)
 
-function ENT:DrawBase(pos, ang, scale, w, h)
+function gBaseENT:DrawBase(pos, ang, scale, w, h)
     local accessLevel = self:GetNW2Int("AccessLevel")
 
     cam.Start3D2D(pos, ang, scale)
@@ -128,7 +128,7 @@ function ENT:DrawBase(pos, ang, scale, w, h)
     cam.End3D2D()
 end
 
-function ENT:DrawSuccess(pos, ang, scale, w, h)
+function gBaseENT:DrawSuccess(pos, ang, scale, w, h)
     cam.Start3D2D(pos, ang, scale)
         surface.SetDrawColor(0, 0, 0, 255)
         surface.DrawRect(0, 0, w, h)
@@ -146,7 +146,7 @@ function ENT:DrawSuccess(pos, ang, scale, w, h)
     end)
 end
 
-function ENT:DrawFailure(pos, ang, scale, w, h)
+function gBaseENT:DrawFailure(pos, ang, scale, w, h)
     cam.Start3D2D(pos, ang, scale)
         surface.SetDrawColor(0, 0, 0, 255)
         surface.DrawRect(0, 0, w, h)
@@ -164,7 +164,7 @@ function ENT:DrawFailure(pos, ang, scale, w, h)
     end)
 end
 
-function ENT:Draw()
+function gBaseENT:Draw()
     self:DrawModel()
 
     local pos = self:GetPos() +
@@ -183,7 +183,7 @@ function ENT:Draw()
     end
 end
 
-function ENT:Initialize()
+function gBaseENT:Initialize()
     print("[Debug] Loaded Entity")
 end 
 

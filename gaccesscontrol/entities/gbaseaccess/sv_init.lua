@@ -5,10 +5,10 @@ resource.AddFile("materials/gaccesscontrol/scp.jpg")
 resource.AddFile("materials/gaccesscontrol/fingerprint.jpg")
 include("sh_shared.lua")
 
-function ENT:Initialize()
+function gBaseENT:Initialize()
     self:SetModel("models/maxofs2d/button_04.mdl")
     self:PhysicsInit(SOLID_VPHYSICS)
-    self:SetMoveType(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
 
     self:SetUseType(SIMPLE_USE)
@@ -45,16 +45,16 @@ function ENT:Initialize()
 end
 
 
-function ENT:AddDoor(ent) 
+function gBaseENT:AddDoor(ent) 
     --We check again incase a third part uses this script and attempts to add a door through the server side function, and not the net message
     if not IsValid(ent) then return end
-    if not gAccessConfig.AllowedDoors[ent:GetClass()] then return end
+    if not gAccessConfig.AllowedDoors[gBaseENT:GetClass()] then return end
 
     table.insert(self.LinkedDoors, ent)
     self:SendDoors()
 end
 
-function ENT:OpenDoor()
+function gBaseENT:OpenDoor()
     for _, v in pairs(self.LinkedDoors) do
         if IsValid(v) then
             v:Fire("Unlock")
@@ -72,7 +72,7 @@ function ENT:OpenDoor()
     end
 end
 
-function ENT:StartSaveDoor()
+function gBaseENT:StartSaveDoor()
     local doorTable = {}
 
     for _, door in pairs(self.LinkedDoors or {}) do
@@ -88,7 +88,7 @@ function ENT:StartSaveDoor()
     return doorTable
 end
 
-function ENT:SaveData()
+function gBaseENT:SaveData()
     local pos = self:GetPos()
     local ang = self:GetAngles()
     local class = self:GetClass()
@@ -149,7 +149,7 @@ function ENT:SaveData()
     end
 end
 
-function ENT:LoadData()
+function gBaseENT:LoadData()
     local pos = self:GetPos()
     local tolerance = 0.1
     local q = string.format("SELECT * FROM %s WHERE abs(x - %f) < %f AND abs(y - %f) < %f AND abs(z - %f) < %f LIMIT 1", 
@@ -173,7 +173,7 @@ end
 
 --Door and password arent properly being sent to player
 
-function ENT:InitializeVariables(data)
+function gBaseENT:InitializeVariables(data)
     for k, v in pairs(data) do
         --This seems impracticle, and the variable below __SHOULD__ address this
         --But it doesnt, SetNW2Int from the database read values doesnt work, but it does work in this loop. So thats fine for now I guess.
@@ -208,7 +208,7 @@ function ENT:InitializeVariables(data)
     self.dnaAccess = dna
 end
 
-function ENT:ModuleCheck(act, callback)
+function gBaseENT:ModuleCheck(act, callback)
     local modules = self.Modules
 
     local keys = {}
@@ -263,21 +263,21 @@ function ENT:ModuleCheck(act, callback)
     processNext()
 end
 
-function ENT:DoDNA(act)
+function gBaseENT:DoDNA(act)
     local valid = hook.Run("gAccess_DoDNA", self, act)
     return valid or false
 end
 
-function ENT:DoKeycard(act)
+function gBaseENT:DoKeycard(act)
     local valid = hook.Run("gAccess_DoKeycard", self, act)
     return valid or false
 end
 
-function ENT:DoPassword(act, cb)
+function gBaseENT:DoPassword(act, cb)
     local valid = hook.Run("gAccess_DoPassword", self, act, cb)
 end
 
-function ENT:AddOverride(team, hasAccess)
+function gBaseENT:AddOverride(team, hasAccess)
     if not self.TeamOverride then
         self.TeamOverride = {}
     end
@@ -288,14 +288,14 @@ function ENT:AddOverride(team, hasAccess)
 end
 
 util.AddNetworkString("gBaseAccess_DrawResponse")
-function ENT:SetResponse(act, Response)
+function gBaseENT:SetResponse(act, Response)
     net.Start("gBaseAccess_DrawResponse")
     net.WriteEntity(self)
     net.WriteString(Response)
     net.Send(act)
 end
 
-function ENT:Use(act, caller, use, value)
+function gBaseENT:Use(act, caller, use, value)
     if not IsValid(act) or not act:IsPlayer() then return end
     local clearenceLevel = self:GetNW2Int("AccessLevel")
 
@@ -346,7 +346,7 @@ function ENT:Use(act, caller, use, value)
     end
 end
 
-function ENT:UpdatePlayer()
+function gBaseENT:UpdatePlayer()
     self:SendOverrides()
     self:SendModules()
     self:SendDNA()
@@ -354,17 +354,17 @@ function ENT:UpdatePlayer()
     self:SetNW2Int("gAccess_Password", self:GetNW2Int("gAccess_Password"))
 end
 
-function ENT:LogUsage(ply, accessLevel, result)
+function gBaseENT:LogUsage(ply, accessLevel, result)
     --We do this so that all logging can be done in a seperate file
     --So anyone can listen to this hook and write their own storing if they please
     hook.Run("gAccess_LogUsage", ply, accessLevel, result)
 end
 
-function ENT:HasModule(type)
+function gBaseENT:HasModule(type)
     return self.Modules[type] == true
 end
 
-function ENT:AddModule(type)
+function gBaseENT:AddModule(type)
     if self.Modules[type] then return false end
     if self:HasModule(type) then return false end
 
@@ -372,7 +372,7 @@ function ENT:AddModule(type)
     self:SendModules()
 end
 
-function ENT:RemoveModule(type)
+function gBaseENT:RemoveModule(type)
     if not self.Modules[type] then return false end
     if not self:HasModule(type) then return false end
 
@@ -380,18 +380,18 @@ function ENT:RemoveModule(type)
     self:SendModules()
 end
 
-function ENT:AddDNA(str)
+function gBaseENT:AddDNA(str)
     self.dnaAccess[str] = true
     self:SendDNA()
 end
 
-function ENT:RemoveDNA(str)
+function gBaseENT:RemoveDNA(str)
     self.dnaAccess[str] = nil
     self:SendDNA()
 end
 
 util.AddNetworkString("gBaseAccess_UpdateDNA")
-function ENT:SendDNA()
+function gBaseENT:SendDNA()
     local dna = util.TableToJSON(self.dnaAccess)
     net.Start("gBaseAccess_UpdateDNA")
     net.WriteEntity(self)
@@ -401,7 +401,7 @@ end
 
 
 util.AddNetworkString("gBaseAccess_UpdateModules")
-function ENT:SendModules()
+function gBaseENT:SendModules()
     if not table.IsEmpty(self.Modules) then
         local modules = util.TableToJSON(self.Modules)
         net.Start("gBaseAccess_UpdateModules")
@@ -412,7 +412,7 @@ function ENT:SendModules()
 end
 
 util.AddNetworkString("gBaseAccess_UpdateOverrides")
-function ENT:SendOverrides()
+function gBaseENT:SendOverrides()
     if not table.IsEmpty(self.TeamOverride) then
         local teamOverride = util.TableToJSON(self.TeamOverride)
         net.Start("gBaseAccess_UpdateOverrides")
@@ -423,14 +423,14 @@ function ENT:SendOverrides()
 end
 
 util.AddNetworkString("gBaseAccess_UpdateDoors")
-function ENT:SendDoors()
+function gBaseENT:SendDoors()
     net.Start("gBaseAccess_UpdateDoors")
     net.WriteEntity(self)
     net.WriteTable(self.LinkedDoors)
     net.Broadcast()
 end
 
-function ENT:ChangeLevel(level)
+function gBaseENT:ChangeLevel(level)
     level = tonumber(level)
     if level > 5 or level < 0 then return false end
 
@@ -483,11 +483,11 @@ net.Receive("gBaseAccess_AddModule", function(len, ply)
 
     if not gAccess.AllowedRanks[ply:GetUserGroup()] then return end
     if not IsValid(ent) then return end
-    if ent:GetClass() != gAccessConfig.ModuleClass then return end
+    if gBaseENT:GetClass() != gAccessConfig.ModuleClass then return end
     if ent.Modules[module] == nil then return end -- Module doesnt exist
     if ent.Modules[module] then return end -- Module already is added
 
-    ent:AddModule(tostring(module))
+    gBaseENT:AddModule(tostring(module))
 end)
 
 util.AddNetworkString("gBaseAccess_RemoveModule")
@@ -499,11 +499,11 @@ net.Receive("gBaseAccess_RemoveModule", function(len, ply)
 
     if not gAccess.AllowedRanks[ply:GetUserGroup()] then return end
     if not IsValid(ent) then return end
-    if ent:GetClass() != gAccessConfig.ModuleClass then return end
+    if gBaseENT:GetClass() != gAccessConfig.ModuleClass then return end
     if ent.Modules[module] == nil then return end -- Module doesnt exist
     if not ent.Modules[module] then return end -- Module already is not added
 
-    ent:RemoveModule(tostring(module))
+    gBaseENT:RemoveModule(tostring(module))
 end)
 
 util.AddNetworkString("gBaseAccess_EditClearence")
@@ -513,8 +513,8 @@ net.Receive("gBaseAccess_EditClearence", function(len, ply)
 
     if not gAccess.AllowedRanks[ply:GetUserGroup()] then return end
     if not IsValid(ent) then return end
-    if ent:GetClass() != gAccessConfig.ModuleClass then return end
-    if not ent:ChangeLevel(newClearence) then return end
+    if gBaseENT:GetClass() != gAccessConfig.ModuleClass then return end
+    if not gBaseENT:ChangeLevel(newClearence) then return end
 end)
 
 util.AddNetworkString("gBaseAccess_AddDoorServer")
@@ -525,8 +525,8 @@ net.Receive("gBaseAccess_AddDoorServer", function(len, ply)
     if not gAccess.AllowedRanks[ply:GetUserGroup()] then return end
     if not IsValid(ent) then return end
     if not IsValid(doorEnt) then return end
-    if ent:GetClass() != gAccessConfig.ModuleClass then return end
-    if not gAccessConfig.AllowedDoors[doorEnt:GetClass()] then return end
+    if gBaseENT:GetClass() != gAccessConfig.ModuleClass then return end
+    if not gAccessConfig.AllowedDoors[doorgBaseENT:GetClass()] then return end
 
-    ent:AddDoor(doorEnt)
+    gBaseENT:AddDoor(doorEnt)
 end)
